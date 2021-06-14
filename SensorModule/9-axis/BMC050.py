@@ -4,8 +4,8 @@ import time
 
 ACC_ADDRESS = 0x19
 ACC_REGISTER_ADDRESS = 0x02
-GYR_ADDRESS = 0x69
-GYR_REGISTER_ADDRESS = 0x02
+# GYR_ADDRESS = 0x69
+# GYR_REGISTER_ADDRESS = 0x02
 MAG_ADDRESS = 0x13
 MAG_REGISTER_ADDRESS = 0x42
 
@@ -32,22 +32,22 @@ def bmx055_setup():
 		time.sleep(0.1)
 
 	#Initialize GYR
-	try:
-		i2c.write_byte_data(GYR_ADDRESS, 0x0F, 0x00)	#Gyro Scale  datasheet p99
-		time.sleep(0.1)
-		i2c.write_byte_data(GYR_ADDRESS, 0x10, 0x07)	#Acc PMU  datasheet p100
-		time.sleep(0.1)
-		i2c.write_byte_data(GYR_ADDRESS, 0x11, 0x00)	#datasheet p100
-		time.sleep(0.1)
-	except:
-		time.sleep(0.1)
-		print("BMX055 Setup Error")
-		i2c.write_byte_data(GYR_ADDRESS, 0x0F, 0x00)	#Gyro Scale  datasheet p99
-		time.sleep(0.1)
-		i2c.write_byte_data(GYR_ADDRESS, 0x10, 0x07)	#Acc PMU  datasheet p100
-		time.sleep(0.1)
-		i2c.write_byte_data(GYR_ADDRESS, 0x11, 0x00)	#datasheet p100
-		time.sleep(0.1)
+	# try:
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x0F, 0x00)	#Gyro Scale  datasheet p99
+	# 	time.sleep(0.1)
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x10, 0x07)	#Acc PMU  datasheet p100
+	# 	time.sleep(0.1)
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x11, 0x00)	#datasheet p100
+	# 	time.sleep(0.1)
+	# except:
+	# 	time.sleep(0.1)
+	# 	print("BMX055 Setup Error")
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x0F, 0x00)	#Gyro Scale  datasheet p99
+	# 	time.sleep(0.1)
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x10, 0x07)	#Acc PMU  datasheet p100
+	# 	time.sleep(0.1)
+	# 	i2c.write_byte_data(GYR_ADDRESS, 0x11, 0x00)	#datasheet p100
+	# 	time.sleep(0.1)
 
 	#Initialize MAG
 	try:
@@ -101,23 +101,23 @@ def acc_dataRead():
 
 	return value
 
-def gyr_dataRead():
-	# --- Read Gyro Data --- "
-	gyrData = [0, 0, 0, 0, 0, 0]
-	value = [0.0, 0.0, 0.0]
-	for i in range(6):
-		try:
-			gyrData[i] = i2c.read_byte_data(GYR_ADDRESS, GYR_REGISTER_ADDRESS+i)
-		except:
-			pass
-			#print("error")
-
-	for i in range(3):
-		value[i] = (gyrData[2*i+1] * 256) + gyrData[i]
-		value[i] = value[i] - 65536 if value[i] > 32767 else value[i]
-		value[i] = value[i] * 0.0038 * 16
-
-	return value
+# def gyr_dataRead():
+# 	# --- Read Gyro Data --- "
+# 	gyrData = [0, 0, 0, 0, 0, 0]
+# 	value = [0.0, 0.0, 0.0]
+# 	for i in range(6):
+# 		try:
+# 			gyrData[i] = i2c.read_byte_data(GYR_ADDRESS, GYR_REGISTER_ADDRESS+i)
+# 		except:
+# 			pass
+# 			#print("error")
+#
+# 	for i in range(3):
+# 		value[i] = (gyrData[2*i+1] * 256) + gyrData[i]
+# 		value[i] = value[i] - 65536 if value[i] > 32767 else value[i]
+# 		value[i] = value[i] * 0.0038 * 16
+#
+# 	return value
 
 def mag_dataRead():
 	# --- Read Mag Data --- #
@@ -145,7 +145,7 @@ def mag_dataRead():
 def bmx055_read():
 	# --- Read BMX055 Data --- #
 	accx, accy, accz = acc_dataRead()
-	gyrx, gyry, gyrz = gyr_dataRead()
+	# gyrx, gyry, gyrz = gyr_dataRead()
 	magx, magy, magz = mag_dataRead()
 
 	#print("[%f, %f, %f] " % (accx, accy, accz), end="")
@@ -153,7 +153,7 @@ def bmx055_read():
 	#print("[%f, %f, %f] " % (magx, magy, magz), end="")
 	#print()
 
-	value = [accx, accy, accz, gyrx, gyry, gyrz, magx, magy, magz]
+	value = [accx, accy, accz, magx, magy, magz]
 
 	# --- Round Data --- #
 	for i in range(len(value)):
