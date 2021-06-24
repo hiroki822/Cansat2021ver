@@ -10,18 +10,19 @@ import BME280
 import traceback
 import math
 import GPS
+import BMC050
 
-anypress = 0
+
+
 Pcount = 0
-GAcount = 0
-Latestgpsalt = 0
-Prevgpsalt = 0
-bme280data = []
+GPScount = 0
+ACCcount = 0
 gpsdata = [0.0, 0.0, 0.0, 0.0, 0.0]
 pressdata = [0.0, 0.0, 0.0, 0.0]
+accdata = [0.0, 0.0, 0.0]
+
 
 def Pressdetect(anypress):
-    global bme280data
     global Pcount
     global pressdata
     presslandjudge = 0
@@ -52,18 +53,18 @@ def Pressdetect(anypress):
 
 def gpsdetect(anyalt):
     global gpsdata
-    global GAcount
+    global GPScount
     gpslandjudge = 0
     try:
         gpsdata = GPS.readGPS()
-        Prevgpsalt = gpsdata[3]
+        Pregpsalt = gpsdata[3]
         time.sleep(1)
         gpsdata = GPS.readGPS()
         Latestgpsalt = gpsdata[3]
-        daltGA = abs(Latestgpsalt - Prevgpsalt)
+        daltGA = abs(Latestgpsalt - Pregpsalt)
         if daltGA < anyalt:
-            GAcount += 1
-            if GAcount > 4:
+            GPScount += 1
+            if GPScount > 4:
                 gpslandjudge = 1
                 print("gpslandjudge")
             else:
@@ -72,7 +73,33 @@ def gpsdetect(anyalt):
         print(traceback.format_exc())
         GAcount = 0
         gpslandjudge = 2
-    return GAcount, gpslandjudge
+    return GPScount, gpslandjudge
+
+def accdetect(anyacc):
+    global accdata
+    global ACCcount
+    acclandjudge = 0
+    try:
+        accdata = BMC050.acc_dataRead()
+        Preacc = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
+        time.sleep(1)
+        accdata = BMC050.acc_dataRead()
+        Latestaccdata = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
+        daltacc = abs(Latestaccdata - Preacc)
+        if daltacc < anyacc:
+            ACCcount += 1
+            if ACCcount > 4:
+                acclandjudge = 1
+                print("acclandjudge")
+            else:
+                acclandjudge = 0
+    except:
+        print(traceback.format_exc())
+        ACCcount = 0
+        acclandjudge = 2
+    return ACCcount, acclandjudge
+
+
 
 if __name__=="__main__":
     
@@ -84,7 +111,13 @@ if __name__=="__main__":
         Pressdetect(0.1)
         time.sleep(1)
 
-    # GPS.openGPS()
+     # GPS.openGPS()
+     # while 1:
+     #     gpsdetect()
+     #    time.sleep(1)
+
+    # bmc050_setup()
     # while 1:
-    #     gsplandjudge()
+    #     accdetect()
+    #     time.sleep(1)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from smbus import SMBus
 import time
 
@@ -9,58 +8,58 @@ MAG_REGISTER_ADDRESS = 0x42
 
 i2c = SMBus(1)
 
-def bmx055_setup():
-	# --- BMX055ãSetup --- #
+def bmc050_setup():
+	# --- BMC050Setup --- #
 	#Initialize ACC
 	try:
-		i2c.write_byte_data(ACC_ADDRESS, 0x0F, 0x03)	#Acc Scale  datasheet p57
+		i2c.write_byte_data(ACC_ADDRESS, 0x0F, 0x03)
 		time.sleep(0.1)
-		i2c.write_byte_data(ACC_ADDRESS, 0x10, 0x0F)	#Acc PMU  datasheet p57
+		i2c.write_byte_data(ACC_ADDRESS, 0x10, 0x0F)
 		time.sleep(0.1)
-		i2c.write_byte_data(ACC_ADDRESS, 0x11, 0x00)	#datasheet p58
+		i2c.write_byte_data(ACC_ADDRESS, 0x11, 0x00)
 		time.sleep(0.1)
 	except:
 		time.sleep(0.1)
 		print("BMX055 Setup Error")
-		i2c.write_byte_data(ACC_ADDRESS, 0x0F, 0x03)	#Acc Scale  datasheet p57
+		i2c.write_byte_data(ACC_ADDRESS, 0x0F, 0x03)
 		time.sleep(0.1)
-		i2c.write_byte_data(ACC_ADDRESS, 0x10, 0x0F)	#Acc PMU  datasheet p57
+		i2c.write_byte_data(ACC_ADDRESS, 0x10, 0x0F)
 		time.sleep(0.1)
-		i2c.write_byte_data(ACC_ADDRESS, 0x11, 0x00)	#datasheet p58
+		i2c.write_byte_data(ACC_ADDRESS, 0x11, 0x00)
 		time.sleep(0.1)
 
 	#Initialize MAG
 	try:
-		data = i2c.read_byte_data(MAG_ADDRESS, 0x4B)	#datasheet p134
+		data = i2c.read_byte_data(MAG_ADDRESS, 0x4B)
 		if(data == 0):
 			i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x83)
 			time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x01)	#datasheet p134
+		i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x01)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4C, 0x38)	#datasheet p135
+		i2c.write_byte_data(MAG_ADDRESS, 0x4C, 0x38)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4E, 0x84)	#datasheet p137
+		i2c.write_byte_data(MAG_ADDRESS, 0x4E, 0x84)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x51, 0x04)	#datasheet p139
+		i2c.write_byte_data(MAG_ADDRESS, 0x51, 0x04)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x52, 0x0F)	#datasheet p139
+		i2c.write_byte_data(MAG_ADDRESS, 0x52, 0x0F)
 		time.sleep(0.1)
 	except:
 		time.sleep(0.1)
-		print("BMX055 Setup Error")
-		data = i2c.read_byte_data(MAG_ADDRESS, 0x4B)	#datasheet p134
+		print("BMC050 Setup Error")
+		data = i2c.read_byte_data(MAG_ADDRESS, 0x4B)
 		if(data == 0):
 			i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x83)
 			time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x01)	#datasheet p134
+		i2c.write_byte_data(MAG_ADDRESS, 0x4B, 0x01)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4C, 0x38)	#datasheet p135
+		i2c.write_byte_data(MAG_ADDRESS, 0x4C, 0x38)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x4E, 0x84)	#datasheet p137
+		i2c.write_byte_data(MAG_ADDRESS, 0x4E, 0x84)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x51, 0x04)	#datasheet p139
+		i2c.write_byte_data(MAG_ADDRESS, 0x51, 0x04)
 		time.sleep(0.1)
-		i2c.write_byte_data(MAG_ADDRESS, 0x52, 0x0F)	#datasheet p139
+		i2c.write_byte_data(MAG_ADDRESS, 0x52, 0x0F)
 		time.sleep(0.1)
 
 def acc_dataRead():
@@ -104,10 +103,9 @@ def mag_dataRead():
 
 	return value
 
-def bmx055_read():
-	# --- Read BMX055 Data --- #
+def bmc050_read():
+	# --- Read BMC050 Data --- #
 	accx, accy, accz = acc_dataRead()
-	# gyrx, gyry, gyrz = gyr_dataRead()
 	magx, magy, magz = mag_dataRead()
 
 	value = [accx, accy, accz, magx, magy, magz]
@@ -121,10 +119,10 @@ def bmx055_read():
 
 if __name__ == '__main__':
 	try:
-		bmx055_setup()
+		bmc050_setup()
 		time.sleep(0.2)
 		while 1:
-			bmxData = bmx055_read()
+			bmxData = bmc050_read()
 			print(bmxData)
 			time.sleep(1)
 
