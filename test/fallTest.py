@@ -36,14 +36,13 @@ import ParaAvoidance
 import Other
 
 phaseChk = 0	#variable for phase Check
-luxstr = ["lux1", "lux2"]																#variable to show lux returned variables
 bme280str = ["temp", "pres", "hum", "alt"]												#variable to show bme280 returned variables
-bmx055str = ["accx", "accy", "accz", "gyrx", "gyry", "gyrz", "dirx", "diry", "dirz"]	#variable to show bmx055 returned variables
+bmc050str = ["accx", "accy", "accz", "dirx", "diry", "dirz"]	#variable to show bmx055 returned variables
 gpsstr = ["utctime", "lat", "lon", "sHeight", "gHeight"]								#variable to show GPS returned variables
 
-gpsData=[0.0,0.0,0.0,0.0,0.0]
-bme280Data=[0.0,0.0,0.0,0.0]
-bmx055data=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+gpsData = [0.0, 0.0, 0.0, 0.0, 0.0]
+bme280Data = [0.0, 0.0, 0.0, 0.0]
+bmx055data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 t_setup = 60	#variable to set waiting time after setup
 t = 1			#Unknown Variable
@@ -52,14 +51,24 @@ y = 180			#time for land(loopy)
 
 t_start  = 0.0	#time when program started
 
-#lcount=0
-acount=0
-Pcount=0
-GAcount=0
-deltHmax=5
+
+#variable used for releasejudge
+acount = 0
+Pcount = 0
+GAcount = 0
+deltHmax = 5
 luxjudge = 0
-pressjudge=0
+pressjudge = 0
+gpsreleasejudge = 0
 pi=pigpio.pi()
+
+#variable used for landjudgment
+presslandjudge = 0
+gpslandjudge = 0
+acclandjudge = 0
+Landjudgment = [pressjudge, gpslandjudge, acclandjudge]
+
+
 
 paraExsist = 0 	#variable used for Para Detection
 
@@ -80,11 +89,11 @@ def setup():
 	time.sleep(1)
 	BME280.bme280_setup()
 	BME280.bme280_calib_param()
-	BMX055.bmx055_setup()
+	BMC050.bmc050_setup()
 	GPS.openGPS()
 
-	with open(phaseLog, 'a') as f:
-		pass
+	# with open(phaseLog, 'a') as f:
+	# 	pass
 
 	phaseChk = int(Other.phaseCheck(phaseLog))
 	print(phaseChk)
@@ -107,10 +116,10 @@ if __name__ == "__main__":
 
 		# ------------------- Waiting Phase --------------------- #
 		Other.saveLog(phaseLog, "2", "Waiting Phase Started", time.time() - t_start)
-		if(phaseChk <= 2):
+		if phaseChk <= 2:
 			t_wait_start = time.time()
 			while(time.time() - t_wait_start <= t_setup):
-				Other.saveLog(waitingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), TSL2561.readLux(), BMX055.bmx055_read())
+				Other.saveLog(waitingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), TSL2561.readLux(), BMC050.bmc050_read())
 				print("Waiting")
 				IM920.Send("Sleep")
 				time.sleep(1)
@@ -119,66 +128,65 @@ if __name__ == "__main__":
 
 		# ------------------- Release Phase ------------------- #
 		Other.saveLog(phaseLog, "3", "Release Phase Started", time.time() - t_start)
-		if(phaseChk <= 3):
+		if phaseChk <= 3:
 			tx1 = time.time()
 			tx2 = tx1
 			print("Releasing Judgement Program Start  {0}".format(time.time() - t_start))
 			#loopx
-			bme280Data=BME280.bme280_read()
-			while (tx2-tx1<=x):
-				#luxjudge = Release.luxjudge()
-				pressjudge = Release.pressjudge()
+			bme280Data = BME280.bme280_read()
+			while tx2 - tx1 <= x:
+				GAcount, gpsreleasejudge = Release.gpsdetect(anyalt)
+				presscount, pressreleasejudge = Release.pressdetect()
 
-				if luxjudge==1 or pressjudge==1:
+
+				if gpsreleasejudge==1 or pressreleasejudge==1:
 					break
 				else:
-					#pass
-		   			print("now in rocket ,taking photo")
-				#Other.saveLog(releaseLog, time.time() - t_start, TSL2561.readLux(), BME280.bme280_read(), BMX055.bmx055_read())
-				Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())
+					print("not yet")
+				Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
 				time.sleep(0.5)
 
-				#Other.saveLog(releaseLog, time.time() - t_start, TSL2561.readLux(), BME280.bme280_read(), BMX055.bmx055_read())
 				Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())				
 				time.sleep(0.5)
 
-				tx2=time.time()
+				tx2 = time.time()
 			else:
 				print("RELEASE TIMEOUT")
 			print("THE ROVER HAS RELEASED")
 			pi.write(22,1)
 			time.sleep(2)
-			IM920.Send("RELEASE")
+			# IM920.Send("RELEASE")
 
 		# ------------------- Landing Phase ------------------- #
 		Other.saveLog(phaseLog, "4", "Landing Phase Started", time.time() - t_start)
-		if(phaseChk <= 4):
+		if phaseChk <= 4:
 			print("Landing Judgement Program Start  {0}".format(time.time() - t_start))
-			ty1=time.time()
-			ty2=ty1
+			ty1 = time.time()
+			ty2 = ty1
 			#loopy
 			gpsData = GPS.readGPS()
-			bme280Data=BME280.bme280_read()
-			while(ty2-ty1<=y):
+			bme280Data = BME280.bme280_read()
+			while ty2 - ty1 <= y:
 				IM920.Send("loopY")
-				pressjudge=Land.pressjudge()
-			#	gpsjudge=Land.gpsjudge()
-				if pressjudge ==1 :#and gpsjudge ==1:
+				presslandjudge = Land.Pressdetect()
+				gpslandjudge = Land.gpsdetect()
+				acclanddetect = Land.accdetect()
+				Landjudgment = [pressjudge, gpslandjudge, acclandjudge]
+
+				if Landjudgment.count(1) >= 2:
 					break
-				elif pressjudge==0 :#and gpsjudge==0:
-				    print("Descend now taking photo")
-			#	elif pressjudge==1 or gpsjudge==1:
-			#	    print("landjudgementnow")
+				else:
+				    print("land not yet")
 				gpsData = GPS.readGPS()
-				bme280Data=BME280.bme280_read()
-				bmx055data=BMX055.bmx055_read()
+				bme280Data = BME280.bme280_read()
+				bmc050data = BMC050.bmc050_read()
 				Other.saveLog(landingLog ,time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())
 				time.sleep(1)
 				Other.saveLog(landingLog ,time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())
 				time.sleep(1)
 				Other.saveLog(landingLog ,time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())
 				time.sleep(1)
-				ty2=time.time()
+				ty2 = time.time()
 			else:
 				print("LAND TIMEOUT")
 			print("THE ROVER HAS LANDED")

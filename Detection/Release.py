@@ -46,7 +46,7 @@ pressreleasejudge = 0
 def gpsdetect(anyalt):
     global gpsdata
     global GAcount
-    gpslandjudge = 0
+    gpsreleasejudge = 0
     try:
         gpsdata = GPS.readGPS()
         Prevgpsalt = gpsdata[3]
@@ -58,15 +58,15 @@ def gpsdetect(anyalt):
         if daltGA > anyalt:
             GAcount += 1
             if GAcount > 4:
-                gpslandjudge = 1
+                gpsreleasejudge = 1
                 print("gpsreleasejudge")
             else:
-                gpslandjudge = 0
+                gpsreleasejudge = 0
     except:
         print(traceback.format_exc())
         GAcount = 0
-        gpslandjudge = 2
-    return GAcount, gpslandjudge
+        gpsreleasejudge = 2
+    return GAcount, gpsreleasejudge
 
 
 def pressdetect(anypress):
@@ -97,7 +97,7 @@ def pressdetect(anypress):
 		print(traceback.format_exc())
 		presscount = 0
 		pressreleasejudge = 2
-	return pressreleasejudge, presscount
+	return presscount, pressreleasejudge
 
 if __name__=="__main__":
 

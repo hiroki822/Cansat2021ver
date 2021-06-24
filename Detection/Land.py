@@ -49,7 +49,7 @@ def Pressdetect(anypress):
         print(traceback.format_exc())
         Pcount = 0
         presslandjudge = 2
-    return Pcount, presslandjudge
+    return Plandcount, presslandjudge
 
 def gpsdetect(anyalt):
     global gpsdata
@@ -71,9 +71,9 @@ def gpsdetect(anyalt):
                 gpslandjudge = 0
     except:
         print(traceback.format_exc())
-        GAcount = 0
+        GPSlandcount = 0
         gpslandjudge = 2
-    return GPScount, gpslandjudge
+    return GPSlandcount, gpslandjudge
 
 def accdetect(anyacc):
     global accdata
@@ -97,7 +97,7 @@ def accdetect(anyacc):
         print(traceback.format_exc())
         ACCcount = 0
         acclandjudge = 2
-    return ACCcount, acclandjudge
+    return ACClandcount, acclandjudge
 
 
 
