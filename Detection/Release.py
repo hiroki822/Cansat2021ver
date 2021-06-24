@@ -100,15 +100,19 @@ def pressdetect(anypress):
 	return pressreleasejudge, presscount
 
 if __name__=="__main__":
-	'''
-	TSL2561.tsl2561_setup()
+
+	# TSL2561.tsl2561_setup()
+	# while 1:
+	# 	luxdetect(200)
+	# 	time.sleep(1)
+
+	GPS.openGPS()
 	while 1:
-		luxdetect(200)
+		gpsdetect(10)
 		time.sleep(1)
-	'''
-	BME280.bme280_setup()
-	BME280.bme280_calib_param()
-	TSL2561.tsl2561_setup()
-	while 1:
-		pressdetect(0.3)
-		time.sleep(1)
+
+	# BME280.bme280_setup()
+	# BME280.bme280_calib_param()
+	# while 1:
+	# 	pressdetect(0.3)
+	# 	time.sleep(1)
