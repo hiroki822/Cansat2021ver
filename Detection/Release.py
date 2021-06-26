@@ -11,15 +11,17 @@ import GPS
 import TSL2561
 import traceback
 
-anylux = 0
-anypress = 0.3
-luxdata = []
-bme280data = []
-luxcount = 0
-presscount = 0
 
-luxreleasejudge = 0
+anyalt = 2
+GAreleasecount = 0
+gpsreleasejudge = 0
+
+anypress = 0.3
+pressreleasecount = 0
 pressreleasejudge = 0
+
+
+
 
 # def luxdetect(anylux):
 # 	global luxdata
@@ -45,7 +47,7 @@ pressreleasejudge = 0
 
 def gpsdetect(anyalt):
     global gpsdata
-    global GAcount
+    global GAreleasecount
     gpsreleasejudge = 0
     try:
         gpsdata = GPS.readGPS()
@@ -56,22 +58,22 @@ def gpsdetect(anyalt):
         daltGA = abs(Latestgpsalt - Prevgpsalt)
         #print(str(Latestgpsslt)+"   :   "+str(Prevgpsalt))
         if daltGA > anyalt:
-            GAcount += 1
-            if GAcount > 4:
+            GAreleasecount += 1
+            if GAreleasecount > 4:
                 gpsreleasejudge = 1
                 print("gpsreleasejudge")
             else:
                 gpsreleasejudge = 0
     except:
         print(traceback.format_exc())
-        GAcount = 0
+        GAreleasecount = 0
         gpsreleasejudge = 2
-    return GAcount, gpsreleasejudge
+    return GAreleasecount, gpsreleasejudge
 
 
 def pressdetect(anypress):
 	global bme280data
-	global presscount
+	global pressreleasecount
 	pressreleasejudge = 0
 	try:
 		pressdata = BME280.bme280_read()
@@ -84,20 +86,20 @@ def pressdetect(anypress):
 		if 0.0 in bme280data:
 			print("BME280rror!")
 			pressreleasejudge = 2
-			presscount = 0
+			pressreleasecount = 0
 		elif deltP > anypress:
-			presscount += 1
-			if presscount > 4:
+			pressreleasecount += 1
+			if pressreleasecount > 4:
 				pressreleasejudge = 1
 				print("pressreleasejudge")
 		else:
-			presscount = 0
+			pressreleasecount = 0
 		#print(str(latestpress) + "	:	" + str(prevpress))
 	except:
 		print(traceback.format_exc())
-		presscount = 0
+		pressreleasecount = 0
 		pressreleasejudge = 2
-	return presscount, pressreleasejudge
+	return pressreleasecount, pressreleasejudge
 
 if __name__=="__main__":
 
