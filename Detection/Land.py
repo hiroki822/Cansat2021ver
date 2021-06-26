@@ -14,9 +14,9 @@ import BMC050
 
 
 
-Pcount = 0
-GPScount = 0
-ACCcount = 0
+Plandcount = 0
+GPSlandcount = 0
+ACClandcount = 0
 gpsdata = [0.0, 0.0, 0.0, 0.0, 0.0]
 pressdata = [0.0, 0.0, 0.0, 0.0]
 accdata = [0.0, 0.0, 0.0]
