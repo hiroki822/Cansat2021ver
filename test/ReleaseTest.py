@@ -1,14 +1,13 @@
 import sys  
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BME280')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/TSL2561')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/GPS')
+
 
 import time
 import serial
 import pigpio
-import BME280
+import BME280 #Environmental
 import GPS
-import TSL2561
 import traceback
 
 
