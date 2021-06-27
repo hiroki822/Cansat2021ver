@@ -21,29 +21,6 @@ pressreleasejudge = 0
 
 
 
-
-# def luxdetect(anylux):
-# 	global luxdata
-# 	global luxcount
-# 	luxreleasejudge = 0
-# 	try:
-# 		luxdata = TSL2561.readLux()
-# 		#print(luxdata)
-# 		#print(luxcount)
-# 		if luxdata[0] > anylux or luxdata[1] > anylux:
-# 			luxcount += 1
-# 			if luxcount > 4:
-# 				luxreleasejudge = 1
-# 				print("luxreleasejudge")
-# 			else:
-# 				luxreleasejudge = 0
-# 	except:
-# 		print(traceback.format_exc())
-# 		luxcount = 0
-# 		luxreleasejudge = 2
-# 	return luxreleasejudge, luxcount
-
-
 def gpsdetect(anyalt):
     global gpsdata
     global GAreleasecount
