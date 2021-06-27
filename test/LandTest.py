@@ -119,13 +119,19 @@ if __name__=="__main__":
         _, presslandjudge = Pressdetect(0.1)
         if presslandjudge == 1:
             print('Press')
+        else:
+            print('Press unfulfilled')
 
         _, gpslandjudge = gpsdetect(0.5)
         if gpslandjudge == 1:
             print('GPS')
+        else:
+            print('GPS unfulfilled')
 
         _, acclandjudge = accdetect(0.5)
         if acclandjudge == 1:
             print('ACC')
+        else:
+            print('ACC unfulfilled')
 
 
