@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/IM920')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BME280')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Camera')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/TSL2561')
-sys.path.append('/home/pi/git/kimuralab/Detection/ParachuteDetection')
-sys.path.append('/home/pi/git/kimuralab/Detection/ReleaseAndLandingDetection')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Melting')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/GPS')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Xbee')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/BME280')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/BMC050')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Camera')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Melting')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
-sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/ParaAvoidance')
-sys.path.append('/home/pi/git/kimuralab/Other')
+
+sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/ParaDetection')
+sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Release')
+sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Land')
+
+sys.path.append('/home/pi/desktop/Cansat2021ver/Other')
+
 import time
 import difflib
 import pigpio
@@ -128,7 +131,7 @@ if __name__ == "__main__":
 		Other.saveLog(phaseLog, "2", "Waiting Phase Started", time.time() - t_start)
 		if phaseChk <= 2:
 			t_wait_start = time.time()
-			while(time.time() - t_wait_start <= t_setup):
+			while time.time() - t_wait_start <= t_setup:
 				Other.saveLog(waitingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), TSL2561.readLux(), BMC050.bmc050_read())
 				print("Waiting")
 				# IM920.Send("Sleep")
@@ -145,19 +148,18 @@ if __name__ == "__main__":
 			#loopx
 			bme280Data = BME280.bme280_read()
 			while tx2 - tx1 <= x:
-				GAreleasecount, gpsreleasejudge = Release.gpsdetect(releasealt)
-				pressreleasecount, pressreleasejudge = Release.pressdetect(releasepress)
-
+				_, gpsreleasejudge = Release.gpsdetect(releasealt)
+				_, pressreleasejudge = Release.pressdetect(releasepress)
 
 				if gpsreleasejudge == 1 or pressreleasejudge == 1:
 					break
 				else:
-					print("not yet")
+					print("Release not yet")
 				Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
 				time.sleep(0.5)
 
-				Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMX055.bmx055_read())				
-				time.sleep(0.5)
+				# Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
+				# time.sleep(0.5)
 
 				tx2 = time.time()
 			else:
@@ -178,9 +180,13 @@ if __name__ == "__main__":
 			bme280Data = BME280.bme280_read()
 			while ty2 - ty1 <= y:
 				# IM920.Send("loopY")
+
+				# Initialize conditions
 				presslandjudge = 0
 				gpslandjudge = 0
 				acclandjudge = 0
+
+				# Judgment
 				presslandjudge = Land.Pressdetect()
 				gpslandjudge = Land.gpsdetect()
 				acclanddetect = Land.accdetect()
@@ -191,15 +197,17 @@ if __name__ == "__main__":
 					break
 				else:
 					print("LAND NOT YET")
+
 				gpsData = GPS.readGPS()
 				bme280Data = BME280.bme280_read()
 				bmc050data = BMC050.bmc050_read()
+
 				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
 				time.sleep(1)
-				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
-				time.sleep(1)
-				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
-				time.sleep(1)
+				# Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
+				# time.sleep(1)
+				# Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
+				# time.sleep(1)
 				ty2 = time.time()
 			else:
 				print("LAND TIMEOUT")
@@ -225,32 +233,6 @@ if __name__ == "__main__":
 			t_ParaAvoidance_start = time.time()
 			print('Parachute Avoidance Phase Started {}'.format(time.time() - t_start))
 
-			while land_point_distance <= 1:
-				try:
-					flug = -1
-					while flug == -1:
-						# --- first parachute detection ---#
-						flug, area, photoname = ParaDetection.ParaDetection("/home/pi/photo/photo", 320, 240, 200, 10, 120)
-						Other.saveLog(ParaAvoidanceLog, 'ParaAvoidance', time.time() - t_start, flug, area, photoname, GPS.readGPS())
-					ParaAvoidance.Parachute_Avoidance(flug, t_start)
-					land_point_distance = ParaAvoidance.Parachute_area_judge(longitude_land, latitude_land)
-					while land_point_distance == 0:
-						land_point_distance = ParaAvoidance.Parachute_area_judge(longitude_land, latitude_land)
-					print('land_point_distance = ', land_point_distance)
-
-				except KeyboardInterrupt:
-					print("Emergency!")
-					run = pwm_control.Run()
-					run.stop()
-
-				except:
-					run = pwm_control.Run()
-					run.stop()
-					print(traceback.format_exc())
-			print('finish')
-			# IM920.Send('P7F')
-			phaseChk += 1
-			print('phaseChk = ' + str(phaseChk))
 			# print("ParaAvoidance Phase Started")
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), "ParaAvoidance Start")
 			# print("START: Judge covered by Parachute")
