@@ -104,22 +104,28 @@ def accdetect(anyacc):
 
 
 if __name__=="__main__":
-    
     print("Start")
+
+    GPS.openGPS()
     BME280.bme280_setup()
     BME280.bme280_calib_param()
+    BMC050.bmc050_setup()
+
     while True:
-        print("Go")
-        Pressdetect(0.1)
-        # time.sleep(1)
+        presslandjudge = 0
+        gpslandjudge = 0
+        acclandjudge = 0
 
-     # GPS.openGPS()
-     # while 1:
-     #     gpsdetect()
-     #    time.sleep(1)
+        _, presslandjudge = Pressdetect(0.1)
+        if presslandjudge == 1:
+            print('Press')
 
-    # bmc050_setup()
-    # while 1:
-    #     accdetect()
-    #     time.sleep(1)
+        _, gpslandjudge = gpsdetect(0.5)
+        if gpslandjudge == 1:
+            print('GPS')
+
+        _, acclandjudge = accdetect(0.5)
+        if acclandjudge == 1:
+            print('ACC')
+
 
