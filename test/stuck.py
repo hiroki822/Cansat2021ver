@@ -22,6 +22,7 @@ def stuck(thd=1):
             motor.stop()
             break
         else:
+            print('まだしてない　:   '+str(acc))
             motor.forward(0.2)
             sleep(2)
 
