@@ -4,6 +4,7 @@ import BMC050
 import sys
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/6-axis')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Motor')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Communication/a')
 
 
 def stuck(thd=1):
@@ -18,11 +19,13 @@ def stuck(thd=1):
         acc_z = accdata[2]
         acc = (acc_x**2 + acc_y**2 + acc_z**2)**0.5
         if acc < thd:
-            print('スタックした　：　'+str(acc))
+            print('スタックした　：acc = '+str(acc))
+            send_ras.str_trans('スタックした　：acc = '+str(acc))
             motor.stop()
             break
         else:
-            print('まだしてない　:   '+str(acc))
+            print('まだしてない　:acc = '+str(acc))
+            send_ras.str_trans('まだしてない　:acc = '+str(acc))
             motor.forward(0.2)
             sleep(2)
 
