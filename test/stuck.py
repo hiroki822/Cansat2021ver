@@ -20,12 +20,12 @@ def stuck(thd=1):
         acc = (acc_x**2 + acc_y**2 + acc_z**2)**0.5
         if acc < thd:
             print('スタックした　：acc = '+str(acc))
-            send.str_trans('スタックした　：acc = '+str(acc))
+            Xbee.str_trans('スタックした　：acc = '+str(acc))
             motor.stop()
             break
         else:
             print('まだしてない　:acc = '+str(acc))
-            send.str_trans('まだしてない　:acc = '+str(acc))
+            Xbee.str_trans('まだしてない　:acc = '+str(acc))
             motor.forward(0.2)
             sleep(2)
 
