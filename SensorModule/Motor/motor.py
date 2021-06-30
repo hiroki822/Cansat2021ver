@@ -1,6 +1,6 @@
 from gpiozero import Motor
 from time import sleep
-
+# ピン番号は仮
 Rpin1 = 17
 Rpin2 = 18
 
