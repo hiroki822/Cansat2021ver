@@ -23,13 +23,15 @@ def angle(magx, magy, magx_off=0, magy_off=0):
 
 if __name__ == '__main__':
     BMC050.bmc050_setup()
-    magdata = BMC050.mag_dataRead()
-    mag_x = magdata[0]
-    mag_y = magdata[1]
-    while True:
-        magdata = BMC050.mag_dataRead()
-        mag_x = magdata[0]
-        mag_y = magdata[1]
-        θ = angle(mag_x, mag_y)
-        print(θ)
-        time.sleep(0.5)
+    try:
+        while True:
+            magdata = BMC050.mag_dataRead()
+            mag_x = magdata[0]
+            mag_y = magdata[1]
+            θ = angle(mag_x, mag_y)
+            print(mag_x,mag_y)
+            print(θ)
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print('end')
+

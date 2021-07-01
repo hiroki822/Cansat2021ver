@@ -21,6 +21,10 @@ accdata = [0.0, 0.0, 0.0]
 
 
 def Pressdetect(anypress):
+    """
+    気圧情報による着地判定用
+    引数はどのくらい気圧が変化したら判定にするかの閾値
+    """
     global Pcount
     global pressdata
     presslandjudge = 0
@@ -51,6 +55,10 @@ def Pressdetect(anypress):
 
 
 def gpsdetect(anyalt):
+    """
+    GPSの高度情報による着地判定用
+    引数はどのくらいGPS高度が変化したら判定にするかの閾値
+    """
     global gpsdata
     global GPScount
     gpslandjudge = 0
@@ -76,6 +84,10 @@ def gpsdetect(anyalt):
 
 
 def accdetect(anyacc):
+    """
+    着地判定用の加速度
+    time.sleepがあるからaccdetect2と比べ時間がかかる
+    """
     global accdata
     global ACCcount
     acclandjudge = 0
@@ -84,10 +96,35 @@ def accdetect(anyacc):
         Preacc = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
         time.sleep(1)
         accdata = BMC050.acc_dataRead()
-        Latestaccdata = math.sqrt(
-            accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
+        Latestaccdata = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
         daltacc = abs(Latestaccdata - Preacc)
         if daltacc < anyacc:
+            ACCcount += 1
+            if ACCcount > 4:
+                acclandjudge = 1
+                print("acclandjudge")
+            else:
+                acclandjudge = 0
+    except:
+        print(traceback.format_exc())
+        ACCcount = 0
+        acclandjudge = 2
+    return ACClandcount, acclandjudge
+
+
+
+def accdetect2(lowerAcc, upperAcc):
+    """
+    着地判定用の加速度
+    time.sleepがないからaccdetectと比べ時間がかからない
+    """
+    global accdata
+    global ACCcount
+    acclandjudge = 0
+    try:
+        accdata = BMC050.acc_dataRead()
+        acc = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
+        if lowerAcc < acc < upperAcc:
             ACCcount += 1
             if ACCcount > 4:
                 acclandjudge = 1
@@ -131,3 +168,6 @@ if __name__ == "__main__":
             print('ACC')
         else:
             print('ACC unfulfilled')
+
+        _, acclandjudge = accdetect2(9, 11)
+        if
