@@ -1,17 +1,15 @@
+import BMC050
+import GPS
+import math
+import traceback
+import BME280
+import pigpio
+import serial
+import time
 import sys
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Illuminance')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/GPS')
-
-import time
-import serial
-import pigpio
-import BME280
-import traceback
-import math
-import GPS
-import BMC050
-
 
 
 Plandcount = 0
@@ -51,6 +49,7 @@ def Pressdetect(anypress):
         presslandjudge = 2
     return Plandcount, presslandjudge
 
+
 def gpsdetect(anyalt):
     global gpsdata
     global GPScount
@@ -76,7 +75,6 @@ def gpsdetect(anyalt):
     return GPSlandcount, gpslandjudge
 
 
-
 def accdetect(anyacc):
     global accdata
     global ACCcount
@@ -86,7 +84,8 @@ def accdetect(anyacc):
         Preacc = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
         time.sleep(1)
         accdata = BMC050.acc_dataRead()
-        Latestaccdata = math.sqrt(accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
+        Latestaccdata = math.sqrt(
+            accdata[0]**2 + accdata[1]**2 + accdata[2]**2)
         daltacc = abs(Latestaccdata - Preacc)
         if daltacc < anyacc:
             ACCcount += 1
@@ -102,8 +101,7 @@ def accdetect(anyacc):
     return ACClandcount, acclandjudge
 
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     print("Start")
 
     GPS.openGPS()
@@ -133,5 +131,3 @@ if __name__=="__main__":
             print('ACC')
         else:
             print('ACC unfulfilled')
-
-
