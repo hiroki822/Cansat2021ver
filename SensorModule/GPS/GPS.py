@@ -110,9 +110,9 @@ def readGPS():
 						Lon = round(float(lon[:3]) + float(lon[3:]) / 60.0, 6)
 					except:
 						utc = -2.0
-					if(gpgll[2] == "S"):
+					if gpgll[2] == "S":
 						Lat = Lat * -1
-					if(gpgll[4] == "W"):
+					if gpgll[4] == "W":
 						Lon = Lon * -1
 				else:
 					utc = -2.0
@@ -240,10 +240,10 @@ def vincentyInverse(lat1, lon1, lat2, lon2, ellipsoid=None):
 if __name__ == '__main__':
 	try:
 		openGPS()
-		while 1:
-			utc,lat,lon,sHeight,gHeight = readGPS()
-			if(utc == -1.0):
-				if(lat == -1.0):
+		while True:
+			utc, lat, lon, sHeight, gHeight = readGPS()
+			if utc == -1.0:
+				if lat == -1.0:
 					print("Reading GPS Error")
 					#pass
 				else:

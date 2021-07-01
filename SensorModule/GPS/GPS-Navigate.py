@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from math import *
+from math import*
 
 # 楕円体
 ELLIPSOID_GRS80 = 1 # GRS80
