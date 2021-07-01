@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/GPS')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Xbee')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/BME280')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/BMC050')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Communication')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/6-axis')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Camera')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Melting')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
@@ -20,10 +19,8 @@ import difflib
 import pigpio
 import serial
 import binascii
-# import IM920
 import Xbee
 import GPS
-# import BMX055
 import BMC050
 import BME280
 import Capture
@@ -97,7 +94,7 @@ def setup():
 	global phaseChk
 
 	pi.set_mode(22,pigpio.OUTPUT)
-	pi.write(22,1)	#IM920	Turn On
+	pi.write(22,1)	#Xbee Turn On  要議論
 	pi.write(17,0)	#outcasing
 	time.sleep(1)
 	BME280.bme280_setup()
@@ -125,7 +122,7 @@ if __name__ == "__main__":
 		print("Program Start  {0}".format(time.time()))
 		setup()
 		print(phaseChk)
-		# IM920.Send("Start")
+		Xbee.str_trans("Start")
 
 		# ------------------- Waiting Phase --------------------- #
 		Other.saveLog(phaseLog, "2", "Waiting Phase Started", time.time() - t_start)
@@ -134,10 +131,10 @@ if __name__ == "__main__":
 			while time.time() - t_wait_start <= t_setup:
 				Other.saveLog(waitingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), TSL2561.readLux(), BMC050.bmc050_read())
 				print("Waiting")
-				# IM920.Send("Sleep")
+				Xbee.str_trans("Sleep")
 				time.sleep(1)
-			# IM920.Send("Waiting Finished")
-			pi.write(22, 0)		#IM920 Turn Off
+			Xbee.str_trans("Waiting Finished")
+			pi.write(22, 0)		#Xbee Turn Off 要議論
 
 		# ------------------- Release Phase ------------------- #
 		Other.saveLog(phaseLog, "3", "Release Phase Started", time.time() - t_start)
@@ -160,14 +157,14 @@ if __name__ == "__main__":
 
 				# Other.saveLog(releaseLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
 				# time.sleep(0.5)
-
 				tx2 = time.time()
+
 			else:
 				print("RELEASE TIMEOUT")
 			print("THE ROVER HAS RELEASED")
 			pi.write(22,1)
 			time.sleep(2)
-			# IM920.Send("RELEASE")
+			Xbee.str_trans("RELEASE")
 
 		# ------------------- Landing Phase ------------------- #
 		Other.saveLog(phaseLog, "4", "Landing Phase Started", time.time() - t_start)
@@ -179,7 +176,7 @@ if __name__ == "__main__":
 			gpsData = GPS.readGPS()
 			bme280Data = BME280.bme280_read()
 			while ty2 - ty1 <= y:
-				# IM920.Send("loopY")
+				Xbee.str_trans("loopY")
 
 				# Initialize conditions
 				presslandjudge = 0
@@ -213,10 +210,10 @@ if __name__ == "__main__":
 				print("LAND TIMEOUT")
 			print("THE ROVER HAS LANDED")
 			pi.write(22,1)
-			# IM920.Send("LAND")
+			Xbee.str_trans("LAND")
 
 		# ------------------- Melting Phase ------------------- #
-		# IM920.Send("Melt")
+		Xbee.str_trans("Melt")
 		Other.saveLog(phaseLog,"5", "Melting Phase Started", time.time() - t_start)
 		if(phaseChk <= 5):
 			print("Melting Phase Started")
@@ -225,10 +222,10 @@ if __name__ == "__main__":
 			Other.saveLog(meltingLog, time.time() - t_start, GPS.readGPS(), "Melting Finished")
 
 		# ------------------- ParaAvoidance Phase ------------------- #
-		# IM920.Send("ParaAvo")
+		Xbee.str_trans("ParaAvo")
 		Other.saveLog(phaseLog, "6", "ParaAvoidance Phase Started", time.time() - t_start)
 		if(phaseChk <= 6):
-			# IM920.Send('P7S')
+			Xbee.str_trans('P7S')
 			Other.saveLog(phaseLog, '7', 'Parachute Avoidance Phase Started', time.time() - t_start)
 			t_ParaAvoidance_start = time.time()
 			print('Parachute Avoidance Phase Started {}'.format(time.time() - t_start))
@@ -242,13 +239,13 @@ if __name__ == "__main__":
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), paraExsist)
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), "ParaAvoidance Finished")
 
-		# IM920.Send("Progam Finished")
+		Xbee.str_trans("Progam Finished")
 		close()
 	except KeyboardInterrupt:
 		close()
 		print("Keyboard Interrupt")
 	except Exception as e:
-		# IM920.Send("error")
+		Xbee.str_trans("error")
 		close()
 		Other.saveLog("/home/pi/log/errorLog.txt", time.time() - t_start, "Error")
 		print(e.message)
