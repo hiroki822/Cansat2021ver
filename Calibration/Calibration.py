@@ -17,6 +17,7 @@ from threading import Thread
 #--- original module ---#
 import BMC050
 import IM920
+import Xbee
 import pwm_control
 import GPS
 import gps_navigate
@@ -28,10 +29,11 @@ RX = 18
 Calibration_rotate_controlLog = '/home/pi/log/Calibration_rotate_controlLog.txt'
 
 def get_data():        
-	#--- get bmc050 data ---#
+	"""
+	MBC050からデータを得る
+	"""
 	try:
 		bmcData = BMC050.bmc050_read()
-		#time.sleep(0.2)
 
 	except KeyboardInterrupt:
 		print()
@@ -177,22 +179,14 @@ def calculate_direction(lon2,lat2):
 			GPS_data = GPS.readGPS()
 			lat1 = GPS_data[1]
 			lon1 = GPS_data[2]
-			#print(GPS_data)
-			IM920.Send(str(GPS_data))
-			#print("lat1 = "+str(lat1))
-			#print("lon1 = "+str(lon1))
-			#time.sleep(1)
 			if lat1 != -1.0 and lat1 != 0.0 :
 				break
-
 	except KeyboardInterrupt:
 		GPS.closeGPS()
 		print("\r\nKeyboard Intruppted, Serial Closed")
-
 	except:
 		GPS.closeGPS()
 		print (traceback.format_exc())
-		
 	#--- calculate angle to goal ---#
 	direction = gps_navigate.vincenty_inverse(lat1,lon1,lat2,lon2)
 	return direction
