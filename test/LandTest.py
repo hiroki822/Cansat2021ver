@@ -170,4 +170,7 @@ if __name__ == "__main__":
             print('ACC unfulfilled')
 
         _, acclandjudge = accdetect2(9, 11)
-        if
+        if acclandjudge == 1:
+            print('ACC')
+        else:
+            print('ACC unfulfilled')
