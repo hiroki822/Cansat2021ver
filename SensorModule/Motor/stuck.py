@@ -9,11 +9,14 @@ sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Communication')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Motor')
 
 
-def stuck_jud(strength, thd=1):
+def stuck_jud(thd=1):
+    Rpin1 = 19
+    Rpin2 = 26
+    Lpin1 = 5
+    Lpin2 = 6
+    motor_r = Motor(Rpin1, Rpin2)
+    motor_l = Motor(Lpin1, Lpin2)
     BMC050.bmc050_setup()
-    motor = Motor(Rpin1, Rpin2)
-    motor.forward(strength)
-    sleep(0.3)
     accdata = BMC050.acc_data()
     acc_x = accdata[0]
     acc_y = accdata[1]
@@ -22,13 +25,12 @@ def stuck_jud(strength, thd=1):
     if acc < thd:
         print('スタックした')
         Xbee.str_trans('スタックした')
-        motor.stop()
+        motor_r.stop()
+        motor_l.stop()
         return False
     else:
         print('まだしてない')
         Xbee.str_trans('まだしてない')
-        motor.forward(0.2)
-        sleep(2)
         return True
 
 

@@ -1,3 +1,4 @@
+from SensorModule.Motor.stuck import stuck_jud
 from time import sleep
 from gpiozero import Motor
 import BMC050
@@ -22,12 +23,14 @@ def stuck(thd=1):
             print('スタックした　：acc = '+str(acc))
             Xbee.str_trans('スタックした　：acc = '+str(acc))
             motor.stop()
+            return False
             break
         else:
             print('まだしてない　:acc = '+str(acc))
             Xbee.str_trans('まだしてない　:acc = '+str(acc))
             motor.forward(0.2)
             sleep(2)
+            return True
 
 
 if __name__ == '__main__':
@@ -37,3 +40,4 @@ if __name__ == '__main__':
     Lpin1 = 19
     Lpin2 = 20
     stuck(12)
+    print(stuck_jud)
