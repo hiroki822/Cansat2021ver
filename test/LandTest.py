@@ -163,14 +163,22 @@ if __name__ == "__main__":
         else:
             print('GPS unfulfilled')
 
-        _, acclandjudge = accdetect(0.5)
-        if acclandjudge == 1:
-            print('ACC')
-        else:
-            print('ACC unfulfilled')
+        # _, acclandjudge = accdetect(0.5)
+        # if acclandjudge == 1:
+        #     print('ACC')
+        # else:
+        #     print('ACC unfulfilled')
 
         _, acclandjudge = accdetect2(9, 11)
         if acclandjudge == 1:
             print('ACC')
         else:
             print('ACC unfulfilled')
+
+        landjudge = [presslandjudge, gpslandjudge, acclandjudge]
+
+        if landjudge.count(1):
+            print('Landed')
+        else:
+            print('Land not yet')
+        
