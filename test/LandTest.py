@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
         landjudge = [presslandjudge, gpslandjudge, acclandjudge]
 
-        if landjudge.count(1):
+        if landjudge.count(1) >= 2:
             print('Landed')
         else:
             print('Land not yet')
