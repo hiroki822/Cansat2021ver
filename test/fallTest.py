@@ -6,7 +6,7 @@ sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/6-axis')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Camera')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Melting')
 sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
+sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Motor')
 
 sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/ParaDetection')
 sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Release')
