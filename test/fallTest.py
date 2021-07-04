@@ -15,6 +15,7 @@ sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Land')
 sys.path.append('/home/pi/desktop/Cansat2021ver/Other')
 
 import time
+import datetime
 import difflib
 import pigpio
 import serial
@@ -36,9 +37,9 @@ import ParaAvoidance
 import Other
 
 phaseChk = 0	#variable for phase Check
-bme280str = ["temp", "pres", "hum", "alt"]												#variable to show bme280 returned variables
-bmc050str = ["accx", "accy", "accz", "dirx", "diry", "dirz"]	#variable to show bmc050 returned variables
-gpsstr = ["utctime", "lat", "lon", "sHeight", "gHeight"]								#variable to show GPS returned variables
+# bme280str = ["temp", "pres", "hum", "alt"]												#variable to show bme280 returned variables
+# bmc050str = ["accx", "accy", "accz", "dirx", "diry", "dirz"]	#variable to show bmc050 returned variables
+# gpsstr = ["utctime", "lat", "lon", "sHeight", "gHeight"]								#variable to show GPS returned variables
 
 gpsData = [0.0, 0.0, 0.0, 0.0, 0.0]
 bme280Data = [0.0, 0.0, 0.0, 0.0]
@@ -94,7 +95,7 @@ def setup():
 	global phaseChk
 
 	pi.set_mode(22,pigpio.OUTPUT)
-	pi.write(22,1)	#Xbee Turn On  要議論
+#	pi.write(22,1)	#Xbee Turn On  要議論
 	pi.write(17,0)	#outcasing
 	time.sleep(1)
 	BME280.bme280_setup()
@@ -120,9 +121,11 @@ if __name__ == "__main__":
 		t_start = time.time()
 		# ------------------- Setup Phase --------------------- #
 		print("Program Start  {0}".format(time.time()))
+		Xbee.str_trans('Program Start {0}'.format(time.time()))
+		Xbee.str_trans('Program Start {0}'.format(datetime.datetime.now()))
 		setup()
 		print(phaseChk)
-		Xbee.str_trans("Start")
+		Xbee.str_trans(phaseChk)
 
 		# ------------------- Waiting Phase --------------------- #
 		Other.saveLog(phaseLog, "2", "Waiting Phase Started", time.time() - t_start)
