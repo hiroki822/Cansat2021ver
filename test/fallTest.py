@@ -134,7 +134,7 @@ if __name__ == "__main__":
 				Xbee.str_trans("Sleep")
 				time.sleep(1)
 			Xbee.str_trans("Waiting Finished")
-			pi.write(22, 0)		#Xbee Turn Off 要議論
+#			pi.write(22, 0)		#Xbee Turn Off (ACTSは任意だから今のところなし)
 
 		# ------------------- Release Phase ------------------- #
 		Other.saveLog(phaseLog, "3", "Release Phase Started", time.time() - t_start)
@@ -162,8 +162,10 @@ if __name__ == "__main__":
 			else:
 				print("RELEASE TIMEOUT")
 			print("THE ROVER HAS RELEASED")
-			pi.write(22,1)
-			time.sleep(2)
+
+			#通信機onにかかわる部分　ACTSは任意だから
+#			pi.write(22,1)
+#			time.sleep(2)
 			Xbee.str_trans("RELEASE")
 
 		# ------------------- Landing Phase ------------------- #
@@ -201,10 +203,10 @@ if __name__ == "__main__":
 
 				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
 				time.sleep(1)
-				# Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
-				# time.sleep(1)
-				# Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
-				# time.sleep(1)
+				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
+				time.sleep(1)
+				Other.saveLog(landingLog, time.time() - t_start, GPS.readGPS(), BME280.bme280_read(), BMC050.bmc050_read())
+				time.sleep(1)
 				ty2 = time.time()
 			else:
 				print("LAND TIMEOUT")
