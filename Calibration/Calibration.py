@@ -56,6 +56,10 @@ def get_data():
 	return magx , magy , magz , accx , accy , accz
 
 def magdata_matrix():
+	"""
+	キャリブレーション用の磁気値を得るための関数
+	forループ内(run)を変える必要がある2021/07/04
+	"""
 	try:
 		get_data()
 		#--- initialize GPS value ---#
@@ -104,7 +108,6 @@ def calculate_offset(magdata):
 	#print("magx_off = "+str(magx_off))
 	#print("magy_off = "+str(magy_off))
 	#print("magz_off = "+str(magz_off))
-
 	return magx_array , magy_array , magz_array , magx_off , magy_off , magz_off
 
 def plot_data_2D(magx_array,magy_array):
@@ -148,6 +151,8 @@ def calculate_angle_2D(magx,magy,magx_off,magy_off):
 	print('calculate:θ = '+str(θ))
 	#--- 0 <= θ <= 360 ---#
 	return θ
+
+
 
 def calculate_angle_3D(accx,accy,accz,magx,magy,magz,magx_off,magy_off,magz_off):
 	#--- recognize rover's direction ---#
