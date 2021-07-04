@@ -27,15 +27,15 @@ def gpsdetect(anyalt):
     gpsreleasejudge = 0
     try:
         gpsdata = GPS.readGPS()
-        Prevgpsalt = gpsdata[3]
+        Pregpsalt = gpsdata[3]
         time.sleep(1)
         gpsdata = GPS.readGPS()
         Latestgpsalt = gpsdata[3]
-        daltGA = abs(Latestgpsalt - Prevgpsalt)
-        #print(str(Latestgpsslt)+"   :   "+str(Prevgpsalt))
+        daltGA = Latestgpsalt - Pregpsalt
+        #print(str(Latestgpsslt)+"   :   "+str(Pregpsalt))
         if daltGA > anyalt:
             GAreleasecount += 1
-            if GAreleasecount > 4:
+            if GAreleasecount > 2:
                 gpsreleasejudge = 1
                 print("gpsreleasejudge")
             else:
@@ -65,7 +65,7 @@ def pressdetect(anypress):
 			pressreleasecount = 0
 		elif deltP > anypress:
 			pressreleasecount += 1
-			if pressreleasecount > 4:
+			if pressreleasecount > 2:
 				pressreleasejudge = 1
 				print("pressreleasejudge")
 		else:
