@@ -1,3 +1,14 @@
+from threading import Thread
+import traceback
+import time
+import pigpio
+import Calibration
+import Stuck
+import pwm_control
+import GPS
+import BMC050
+import IM920
+import gps_navigate
 import sys
 
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Wireless')
@@ -9,23 +20,12 @@ sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Calibration')
 sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Stuck')
 
 # --- original module ---#
-import gps_navigate
-import IM920
-import BMC050
-import GPS
-import pwm_control
-import Stuck
-import Calibration
 
 # --- must be installed module ---#
-import pigpio
 # import numpy as np
 
 # --- default module ---#
 # import difflib
-import time
-import traceback
-from threading import Thread
 
 GPS_data = [0.0, 0.0, 0.0, 0.0, 0.0]
 
@@ -94,7 +94,8 @@ if __name__ == "__main__":
                 magx = data[0]
                 magy = data[1]
                 # --- 0 <= θ <= 360 ---#
-                θ = Calibration.calculate_angle_2D(magx, magy, magx_off, magy_off)
+                θ = Calibration.calculate_angle_2D(
+                    magx, magy, magx_off, magy_off)
 
                 # --- if rover go wide left, turn right ---#
                 # --- 15 <= azimuth <= 360 ---#
@@ -128,7 +129,8 @@ if __name__ == "__main__":
                         run.turn_left_l()
                         time.sleep(0.5)
                 # --- stuck detection ---#
-                moved_distance = Stuck.stuck_detection2(longitude_past, latitude_past)
+                moved_distance = Stuck.stuck_detection2(
+                    longitude_past, latitude_past)
                 if moved_distance >= 15:
                     IM920.Send("Rover is moving now")
                     print('Rover is moving now')
@@ -153,7 +155,6 @@ if __name__ == "__main__":
                     break
                 loop_count += 1
                 print('loop count is ' + str(loop_count))
-
 
         except KeyboardInterrupt:
             run = pwm_control.Run()
