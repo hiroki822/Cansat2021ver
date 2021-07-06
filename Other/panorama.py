@@ -3,6 +3,7 @@ import os
 import glob
 import time
 
+path = '/home/pi/Desktop/Cansat2021ver/photosotorage/panorama'
 
 def panorama(srcdir,prefix='',srcext='.jpg',dstext='.jpg'):
     """
@@ -32,10 +33,10 @@ def panorama(srcdir,prefix='',srcext='.jpg',dstext='.jpg'):
 
 if __name__ == "__main__":
     try:
-        tratTime = time.time()  # プログラムの開始時刻
-        panorama(srcdir)
+        startTime = time.time()  # プログラムの開始時刻
+        panorama(path)
         endTime = time.time() #プログラムの終了時間
-        runTime = endTime - stratTime
+        runTime = endTime - startTime
         print(runTime)
     except:
         print('Error')
