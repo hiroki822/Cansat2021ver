@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/GPS')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Communication')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/6-axis')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Camera')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Melting')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Environmental')
-sys.path.append('/home/pi/desktop/Cansat2021ver/SensorModule/Motor')
-
-sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/ParaDetection')
-sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Release')
-sys.path.append('/home/pi/desktop/Cansat2021ver/Detection/Land')
-
-sys.path.append('/home/pi/desktop/Cansat2021ver/Other')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/GPS')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Communication')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/6-axis')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Camera')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Melting')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Environmental')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Motor')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Detection/ParaDetection')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Detection/Release')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Detection/Land')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Other')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/test')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Calibration')
 
 import time
 import datetime
@@ -35,6 +35,8 @@ import TSL2561
 import ParaDetection
 import ParaAvoidance
 import Other
+import panoramaShootingtest #名称変更の可能性あり
+import Calibration
 
 phaseChk = 0	#variable for phase Check
 # bme280str = ["temp", "pres", "hum", "alt"]												#variable to show bme280 returned variables
@@ -89,7 +91,7 @@ releaseLog = "/home/pi/log/releaseLog.txt"
 landingLog = "/home/pi/log/landingLog.txt"
 meltingLog = "/home/pi/log/meltingLog.txt"
 paraAvoidanceLog = "/home/pi/log/paraAvoidanceLog.txt"
-
+panoramapath = '/home/pi/Desktop/Cansat2021ver/photosotorage/panorama'
 
 def setup():
 	global phaseChk
@@ -227,13 +229,16 @@ if __name__ == "__main__":
 			Other.saveLog(meltingLog, time.time() - t_start, GPS.readGPS(), "Melting Finished")
 
 		# ------------------- ParaAvoidance Phase ------------------- #
+		"""
+		パラシュート回避行動を追加したい。
+		"""
 		Xbee.str_trans("ParaAvo")
 		Other.saveLog(phaseLog, "6", "ParaAvoidance Phase Started", time.time() - t_start)
 		if(phaseChk <= 6):
 			Xbee.str_trans('P7S')
 			Other.saveLog(phaseLog, '7', 'Parachute Avoidance Phase Started', time.time() - t_start)
 			t_ParaAvoidance_start = time.time()
-			print('Parachute Avoidance Phase Started {}'.format(time.time() - t_start))
+			print('Parachute Avoidance Phase Started {0}'.format(time.time() - t_start))
 
 			# print("ParaAvoidance Phase Started")
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), "ParaAvoidance Start")
@@ -243,6 +248,22 @@ if __name__ == "__main__":
 			# paraExsist = ParaAvoidance.ParaAvoidance()
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), paraExsist)
 			# Other.saveLog(paraAvoidanceLog, time.time() - t_start, GPS.readGPS(), "ParaAvoidance Finished")
+
+
+		# ------------------- Panorama Shooting Phase ------------------- #
+		Xbee.str_trans('Panorama')
+		Other.saveLog(phaseLog, '7', 'Panorama Shooting phase', time.time() - t_start)
+		t_PanoramaShooting_start = time.time()
+		print('Panorama Shooting Phase Started {0}'.format(time.time() - t_start))
+		magdata = Calibration.magdata_matrix()
+		magx_off, magy_off = Calibration.calculate_offset(magdata)
+
+		panoramaShootingtest.shooting(magx_off, magy_off, panoramapath)
+
+		Other.panorama(srcdir=panoramapath)
+
+
+
 
 		Xbee.str_trans("Progam Finished")
 		close()
