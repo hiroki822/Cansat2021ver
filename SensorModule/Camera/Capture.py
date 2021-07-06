@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/pi/git/kimuralab/Other')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/Other')
 import picamera
 import time
 import traceback
