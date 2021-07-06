@@ -13,27 +13,29 @@ def rotation(magx_off, magy_off,count=1):
     """
     回転テスト用(パノラマ撮影もこれからスタート？)
     引数は磁気のオフセット、countは回転する回数
-    プラスマイナスを行き来する場合は使えないから改善する必要あり2021/07/04
     takayama
     """
     for _ in range(count):
         magdata = BMC050.mag_dataRead()
         magx = magdata[0]
         magy = magdata[1]
-        preθ = Calibration.calculate_angle_2D(magx, magy, 0, 0)
-        Xbee
+        preθ = Calibration.calculate_angle_2D(magx, magy, magx_off, magy_off)
         sumθ = 0
         deltaθ = 0
-        Xbee.str_trans(preθ + ' whileスタート')
+        Xbee.str_trans('whileスタート{0}'.format(preθ))
 
         while sumθ <= 360:
-            motorTest.motor_move(1, -1, 1)
+            motorTest.motor_move(-1, 1, 1) #調整するところ？
             magdata = BMC050.mag_dataRead()
             magx = magdata[0]
             magy = magdata[1]
-            latestθ = Calibration.calculate_angle_2D(magx, magy, 0, 0)
+            latestθ = Calibration.calculate_angle_2D(magx, magy, magx_off, magy_off)
+            if preθ >= 300 and latestθ <= 100:
+                latestθ += 360
             deltaθ = preθ - latestθ
             sumθ += deltaθ
+            if latestθ >= 360:
+                latestθ -= 360
             preθ = latestθ
             Xbee.str_trans('sumθ:', sumθ, ' preθ:', preθ, ' deltaθ:', deltaθ)
 
