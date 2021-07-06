@@ -1,12 +1,15 @@
 import sys
 sys.path.append('/home/pi/Desktop/Cansat2021ver/Other')
 sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Camera')
-
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Emvironmental')
+sys.path.append('/home/pi/Desktop/Cansat2021ver/SensorModule/Communication')
 import panorama
 import Capture
+import BMC050
+import Xbee
 
 
-def shooting(magx_off, magy_off):
+def shooting(magx_off, magy_off, path):
     """
     パノラマ撮影用の関数
     引数は磁気のオフセット
@@ -20,7 +23,7 @@ def shooting(magx_off, magy_off):
     Xbee.str_trans('whileスタート preθ:{0}'.format(preθ))
 
     while sumθ <= 360:
-        Captrue.Capture('/home/pi/Desktop/Cansat2021ver/photosotorage/panorama')
+        Captrue.Capture(path)
         motorTest.motor_move(-1, 1, 1) #調整するところ？
         magdata = BMC050.mag_dataRead()
         magx = magdata[0]
