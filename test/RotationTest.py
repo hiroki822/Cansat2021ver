@@ -22,7 +22,7 @@ def rotation(magx_off, magy_off,count=1):
         preθ = Calibration.calculate_angle_2D(magx, magy, magx_off, magy_off)
         sumθ = 0
         deltaθ = 0
-        Xbee.str_trans('whileスタート{0}'.format(preθ))
+        Xbee.str_trans('whileスタート {0}'.format(preθ))
 
         while sumθ <= 360:
             motorTest.motor_move(-1, 1, 1) #調整するところ？
