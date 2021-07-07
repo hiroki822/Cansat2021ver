@@ -62,3 +62,7 @@ def motor_move(strength_l, strength_r, time):
         motor_r.backward(abs(strength_r))
         motor_l.forkward(abs(strength_l))
         sleep(time)
+
+def motor(strength_l, strength_r, time, x=1):
+    motor_move(strength_l, strength_r, time)
+    motor_stop(x)
