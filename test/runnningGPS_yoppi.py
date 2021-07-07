@@ -5,6 +5,7 @@ import pigpio
 import Calibration
 import Stuck
 import motor
+import stuck
 import GPS
 import BMC050
 import Xbee
@@ -93,31 +94,46 @@ if __name__ == "__main__":
         # ローバーを目標地点に合わせる
         # パラメータ要確認
         Xbee.str_trans('theta = '+str(theta)+'---回転調整開始！')
+        count = 0
         while abs(theta) > 30:
+            Xbee.str_trans(str(count))
+            if count > 6:
+                Xbee.str_trans('スタックもしくはこの場所が適切ではない')
+                stuck.stuck_avoid()
+
             if abs(theta) <= 180:
                 if abs(theta) <= 60:
                     Xbee.str_trans('theta = '+str(theta)+'---回転開始ver1')
-                    Motor.motor_move(
+                    motor.motor_move(
                         np.sign(theta)*0.5, -1*np.sign(theta)*0.5, 3)
+                    motor.stop()
 
                 elif abs(theta) <= 180:
                     Xbee.str_trans('theta = '+str(theta)+'---回転開始ver2')
-                    Motor.motor_move(-np.sign(theta)
+                    motor.motor_move(-np.sign(theta)
                                      * 0.5, np.sign(theta)*0.5, 3)
+                    motor.motor_stop()
             elif abs(theta) > 180:
                 if abs(theta) >= 300:
                     Xbee.str_trans('theta = '+str(theta)+'---回転開始ver3')
-                    Motor.motor_move(-np.sign(theta)
+                    motor.motor_move(-np.sign(theta)
                                      * 0.5, np.sign(theta)*0.5, 5)
+                    motor.motor_stop()
                 elif abs(theta) > 180:
                     Xbee.str_trans('theta = '+str(theta)+'---回転開始ver4')
-                    Motor.motor_move(
+                    motor.motor_move(
                         np.sign(theta)*0.5, -np.sign(theta)*0.5, 5)
+                    motor.motor_stop()
+            count += 1
+
         Xbee.str_trans('theta = '+str(theta)+'---回転終了!!!')
 
         # パラメータ要確認
         Xbee.str_trans('theta = '+str(theta)+'---直進開始')
-        Motor.motor_move(0.8, 0.8, 10)
+        motor.motor_move(0.8, 0.8, 0.2)
+        if stuck.stuck_duj():
+            stuck.stuck_avoid()
+        motor.motor_move(0.8, 0.8, 10)
 
      # --- calculate  goal direction ---#
         direction = Calibration.calculate_direction(lon2, lat2)

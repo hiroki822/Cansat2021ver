@@ -29,73 +29,103 @@ def stuck_jud(thd=10):  # しきい値thd調整必要
 
 
 def stuck_avoid_move(x):
-    Rpin1 = 19
-    Rpin2 = 26
-    Lpin1 = 5
-    Lpin2 = 6
-    motor_r = Motor(Rpin1, Rpin2)
-    motor_l = Motor(Lpin1, Lpin2)
-    if x == 1:
-        motor.motor_move_avoid(1, 1, 5)
+    if x == 0:
+        Xbee.str_trans('sutck_avoid_move():0')
+        motor.motor_move(1, 1, 5)
+        motor.stop()
         sleep(0.5)
-        motor_r.forward(0.8)
-        motor_l.forward(0.8)
-        sleep(0.2)
+        motor.motor_move(0.8, 0.8, 0.2)
+    elif x == 1:
+        Xbee.str_trans('sutck_avoid_move():1')
+        motor.motor_move(-1, -1, 5)
+        motor.stop()
+        sleep(0.5)
+        motor.motor_move(-0.8, -0.8, 0.2)
     elif x == 2:
-        motor_r.forward(1)
-        motor_l.backward(1)
-        sleep(5)
-        motor_r.stop()
-        motor_l.stop()
+        Xbee.str_trans('sutck_avoid_move():2')
+        motor.motor_move(0, 1, 5)
+        motor.stop()
         sleep(0.5)
-        motor_r.forward(0.8)
-        motor_l.backward(0.8)
-        sleep(0.2)
+        motor.motor_move(0.8, 0.8, 0.2)
+
     elif x == 3:
-        motor_r.backward(1)
-        motor_l.backward(1)
-        sleep(5)
-        motor_r.stop()
-        motor_l.stop()
+        Xbee.str_trans('sutck_avoid_move():3')
+        motor.motor_move(1, 0, 5)
+        motor.stop()
         sleep(0.5)
-        motor_r.backward(0.8)
-        motor_l.backward(0.8)
-        sleep(0.2)
+        motor.motor_move(0.8, 0.8, 0.2)
+
     elif x == 4:
-        motor_r.backward(1)
-        motor_l.forward(1)
-        sleep(5)
-        motor_r.stop()
-        motor_l.stop()
+        Xbee.str_trans('sutck_avoid_move():4')
+        motor.motor_move(0, -1, 5)
+        motor.stop()
         sleep(0.5)
-        motor_r.backward(0.8)
-        motor_l.forward(0.8)
+        motor.motor_move(-0.8, -0.8, 0.2)
+
+    elif x == 5:
+        Xbee.str_trans('sutck_avoid_move():5')
+        motor.motor_move(-1, 0, 5)
+        motor.stop()
+        sleep(0.5)
+        motor.motor_move(-0.8, -0.8, 0.2)
+
+    elif x == 6:
+        Xbee.str_trans('sutck_avoid_move():6')
+        motor.motor_move(1, -1, 5)
+        motor.stop()
+        sleep(0.5)
+        motor.motor_move(0.8, -0.8, 0.2)
         sleep(0.2)
 
 
 # ここ途中
 def stuck_avoid():
+    Xbee.str_trans('スタック回避開始')
     flag = False
     while 1:
-        # 1,2,3,4
-        for i in 4:
-            bool_stuck = stuck.stuck_avoid_move(i+1)
+        # 0~6
+        for i in range(7):
+            stuck.stuck_avoid_move(i)
+            bool_stuck = stuck.stuck_jud()
             motor.motor_stop()
-            if stuck.stuck_duj() == False:
-                if i == 2:
-
+            if bool_stuck == False:
+                if i == 1 or i == 4 or i == 5:
+                    Xbee.str_trans('スタック避ける')
+                    motor.motor_move(-0.8, -0.8, 2)
+                    motor.stop()
+                    sleep(1)
+                    motor.motor_move(0.2, 0.8, 1)
+                    motor.stop()
+                    sleep(1)
+                    motor.motor_move(0.8, 0.8, 5)
+                    motor.stop()
+                    sleep(1)
                 flag = True
                 break
         if flag:
             break
-        # 4,3,2,1
-        for i in 4:
-            stuck.stuck_avoid_move(4-i)
-            if stuck.stuck_duj() == False:
+        # 3,2,1,0
+        for i in range(7):
+            stuck.stuck_avoid_move(7-i)
+            bool_stuck = stuck.stuck_jud()
+            motor.motor_stop()
+            if bool_stuck == False:
+                if i == 1 or i == 4 or i == 5:
+                    Xbee.str_trans('スタック脱出中')
+                    motor.motor_move(-0.8, -0.8, 2)
+                    motor.stop()
+                    sleep(1)
+                    motor.motor_move(0.2, 0.8, 1)
+                    motor.stop()
+                    sleep(1)
+                    motor.motor_move(0.8, 0.8, 5)
+                    motor.stop()
+                    sleep(1)
                 flag = True
                 break
         if flag:
             break
+    Xbee.str_trans('スタック回避完了')
 
 
 if __name__ == '__main__':
