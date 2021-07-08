@@ -125,6 +125,14 @@ if __name__ == "__main__":
                         np.sign(theta)*0.5, -np.sign(theta)*0.5, 5)
                     motor.motor_stop()
             count += 1
+            data = Calibration.get_data()
+            magx = data[0]
+            magy = data[1]
+            # --- 0 <= θ <= 360 ---#
+            theta = Calibration.calculate_angle_2D(
+                magx, magy, magx_off, magy_off)
+            azimuth = direction["azimuth1"]
+            theta = theta-azimuth
 
         Xbee.str_trans('theta = '+str(theta)+'---回転終了!!!')
 
